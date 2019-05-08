@@ -2,37 +2,41 @@ const inputs = [
   {
     id: 'mf',
     name: 'Magical force',
-    default: 1
+    default: 12230
   },
   {
     id: 'cdm',
     name: 'Crit damage modifier',
-    default: 1
+    default: 3249
   },
   {
     id: 'ccm',
     name: 'Crit chance modifier',
-    default: 1
+    default: 7843
   },
   {
     id: 'cdb',
     name: 'Crit damage base',
-    default: 1.9
+    default: 1.9,
+    readonly: true
   },
   {
     id: 'cdr',
     name: 'Crit damage rate',
-    default: 67
+    default: 67,
+    readonly: true
   },
   {
     id: 'ccb',
     name: 'Crit chance base',
-    default: 0.1
+    default: 0.1,
+    readonly: false
   },
   {
     id: 'ccr',
     name: 'Crit chance rate',
-    default: 95.410691003911342894393741851369
+    default: 95.410691003911342894393741851369,
+    readonly: true
   }
 ]
 const formulas = [
@@ -41,38 +45,56 @@ const formulas = [
       return cdm / cdr / 100 + cdb
     },
     name: 'Crit damage',
-    id: 'cd'
+    id: 'cd',
+    format(value) {
+      return `${Math.round(value * 100)}%`
+    }
   },
   {
     formula({ccm, ccr, ccb}) {
       return ccm / ccr / 100 + ccb
     },
     name: 'Crit chance',
-    id: 'cc'
+    id: 'cc',
+    format(value) {
+      return `${(Math.round(value * 1000)/10).toFixed(1)}%`
+    }
   },
   {
     formula({mf, cd, cc}) {
       return mf*cd*cc + (1 - cc)*mf
     },
-    name: 'Absolute might'
+    name: 'Absolute might',
+    format(value) {
+      return Math.round(value)
+    }
   },
   {
     formula({cd, cc}) {
       return (cd - 1)*cc + 1
     },
-    name: 'Magical force efficiency'
+    name: 'Magical force efficiency',
+    format(value) {
+      return value.toFixed(2)
+    }
   },
   {
-    formula({mf, cc}) {
-      return mf*cc
+    formula({mf, ccm, ccr, ccb, cdr}) {
+      return mf*(ccm / ccr / 100 + ccb)*(1 / cdr / 100)
     },
-    name: 'Crit. damage efficiency'
+    name: 'Crit. damage efficiency',
+    format(value) {
+      return value.toFixed(2)
+    }
   },
   {
-    formula({mf, cd}) {
-      return (mf*cd - mf)
+    formula({mf, cdm, cdr, cdb, ccr}) {
+      return mf*(cdm / cdr / 100 + cdb)*(1 / ccr / 100) - mf*(1 / ccr / 100)
     },
-    name: 'Crit. chance efficiency'
+    name: 'Crit. chance efficiency',
+    format(value) {
+      return value.toFixed(2)
+    }
   }
 ]
 function addInputs() {
@@ -80,7 +102,13 @@ function addInputs() {
   inputsElement.innerHTML = ''
   inputs.forEach(input => {
     inputsElement.innerHTML += `
-      ${input.name}: <input type='number' id='${input.id}' value='${input.default}' onchange='calc()'/>
+      ${input.name}: <input 
+        type='number' 
+        id='${input.id}' 
+        value='${input.default}' 
+        onchange='calc()'
+        ${input.readonly ? 'readonly' : ''}
+      />
     `
   })
 }
@@ -101,6 +129,11 @@ function calc() {
       <div class='output-item'>
         <span class='formula-name'>${f.name}</span>
         <span class='formula-value'>${y}</span>
+        ${
+          f.format ?
+          `<span class='formula-format'>${f.format(y)}</span>`
+          : ''
+        }
       </div>
     `
   })

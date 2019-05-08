@@ -1,12 +1,25 @@
-m - magical force, 1..Infinity
-d - critical damage, 1..Infinity
-c - critical chance, 0..1
+mf - magical force, 1..Infinity
+cd - critical damage, 1..Infinity
+cdm - critical damage modifier
+cdr - critical damage rate, CONST
+cdb - critical damage base, CONST
+cc - critical chance, 0..1
+ccm - critical chance modifier
+ccr - critical chance rate, CONST
+ccb - critical chance base, CONST
 
-f = mdc + (1 - c)m
+3 real variables: mf, cdm, ccm
 
-f'm = (d - 1)c + 1
-f'd = mc
-f'c = md - m
+cd = cdm / cdr / 100 + cdb
+cc = ccm / ccr / 100 + ccb
+f = mf*cd*cc + (1 - cc)*mf
+  = mf*(cdm / cdr / 100 + cdb)*(ccm / ccr / 100 + ccb) + (1 - (ccm / ccr / 100 + ccb))*mf
+
+f'mf = (d - 1)c + 1
+f'cd = mf*cc
+f'cc = mf*cd - mf
+f'cdm = mf*(ccm / ccr / 100 + ccb)*(1 / cdr / 100)
+f'ccm = mf*(cdm / cdr / 100 + cdb)*(1 / ccr / 100) - mf*(1 / ccr / 100)
 
 
 55,255255255255255255255255255255
