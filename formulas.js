@@ -29,7 +29,7 @@ const inputs = [
   {
     id: 'ccb',
     name: 'Crit chance base',
-    default: 0.1,
+    default: 0.14, //0.1 base + 0.04 from чулок card
     readonly: false
   },
   {
@@ -70,8 +70,8 @@ const formulas = [
     }
   },
   {
-    formula({cd, cc}) {
-      return (cd - 1)*cc + 1
+    formula({cdm, cdr, cdb, ccm, ccr, ccb}) {
+      return (cdm / cdr / 100 + cdb)*(ccm / ccr / 100 + ccb) + 1 - (ccm / ccr / 100 + ccb)
     },
     name: 'Magical force efficiency',
     format(value) {

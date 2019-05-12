@@ -15,7 +15,8 @@ cc = ccm / ccr / 100 + ccb
 f = mf*cd*cc + (1 - cc)*mf
   = mf*(cdm / cdr / 100 + cdb)*(ccm / ccr / 100 + ccb) + (1 - (ccm / ccr / 100 + ccb))*mf
 
-f'mf = (d - 1)c + 1
+f'mf = dc + 1 - c = (d - 1)c + 1
+f'mf = (cdm / cdr / 100 + cdb)*(ccm / ccr / 100 + ccb) + 1 - (ccm / ccr / 100 + ccb)
 f'cd = mf*cc
 f'cc = mf*cd - mf
 f'cdm = mf*(ccm / ccr / 100 + ccb)*(1 / cdr / 100)
